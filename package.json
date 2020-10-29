@@ -19,7 +19,8 @@
     "lint": "tslint --config tslint.json --project tsconfig.json",
     "test": "mocha --exit --recursive -r ts-node/register 'test/**/*.test.ts'",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "release": "yarn np --no-tests --no-2fa"
   },
   "files": [
     "dist/src/",
