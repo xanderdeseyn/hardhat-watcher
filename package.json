@@ -1,6 +1,6 @@
 {
   "name": "hardhat-watcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Hardhat file watcher plugin",
   "repository": "https://github.com/N1ghtly/hardhat-watcher",
   "author": "Xander Deseyn",
