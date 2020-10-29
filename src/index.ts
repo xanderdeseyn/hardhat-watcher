@@ -43,5 +43,7 @@ task("watch", "Start the file watcher").setAction(
         console.log(`Watcher error: ${error}`);
         process.exit(1);
       });
+
+    return new Promise(() => {});
   }
 );
