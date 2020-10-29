@@ -44,6 +44,6 @@ task("watch", "Start the file watcher").setAction(
         process.exit(1);
       });
 
-    return new Promise(() => {});
+    setInterval(() => {}, 1 << 30);
   }
 );

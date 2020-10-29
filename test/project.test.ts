@@ -21,9 +21,10 @@ describe("Integration tests examples", function () {
       try {
         simulateFileChange("Contract.sol");
         await this.hre.run("watch");
+        await sleep(1000);
 
         simulateFileChange("Contract2.sol");
-        await sleep(5000);
+        await sleep(4000);
         const dir = readArtifactDir(this.hre);
         console.log(dir);
         expect(dir).to.contain("TestContract2.json");
