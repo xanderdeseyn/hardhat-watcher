@@ -29,8 +29,8 @@ import "hardhat-watcher";
 ## Tasks
 
 This plugin adds the _watch_ task to Hardhat:
-```
-`npx hardhat watch`
+```bash
+npx hardhat watch
 ```
 
 ## Configuration
