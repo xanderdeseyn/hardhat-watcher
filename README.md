@@ -43,8 +43,8 @@ This is the complete type:
 ```js
 module.exports = {
   watcher: {
-    tasks?: string[]; // Every task of the hardhat runtime is supported (including other plugins!)
-    directories?: string[]; // Directories to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to `contracts`)
+    tasks?: (string | { command: string, params?: { [key: string] => any } })[]; // Every task of the hardhat runtime is supported (including other plugins!)
+    files?: string[]; // Files, directories or glob patterns to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to the `contracts` dir)
     verbose?: boolean; // Turn on for extra logging
   }
 };
@@ -63,3 +63,13 @@ module.exports = {
 ```
 
 and subsequently running `npx hardhat watch`
+
+A bit more involved and showcasing the use of parameters for tasks:
+
+```js
+module.exports = {
+  watcher: {
+    tasks: ["clean", { command: "compile", params: { quiet: true } }],
+  },
+}
+```
