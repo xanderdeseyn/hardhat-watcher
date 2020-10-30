@@ -7,6 +7,7 @@ const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   watcher: {
     tasks: ["clean", { command: "compile", params: { quiet: true } }],
+    files: ["./contracts"],
     verbose: true,
   },
 };

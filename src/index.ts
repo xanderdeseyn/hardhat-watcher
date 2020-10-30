@@ -61,8 +61,8 @@ task("watch", "Start the file watcher").setAction(
           try {
             await run(task.command, task.params);
           } catch (err) {
-            logVerbose(`Task "${task.command}" failed.`);
-            logVerbose(err);
+            console.log(`Task "${task.command}" failed.`);
+            console.log(err);
           }
         }
       })
