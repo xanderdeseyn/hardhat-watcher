@@ -31,7 +31,11 @@ extendConfig(
 
 task("watch", "Start the file watcher").setAction(
   async ({}, { run, tasks, config: { watcher } }) => {
-    console.log("Starting file watcher", watcher.files);
+    const logVerbose = (...messages: any) => {
+      if (watcher.verbose) console.log(...messages);
+    };
+
+    logVerbose("Starting file watcher", watcher.files);
 
     // Validate tasks
     watcher.tasks.forEach((task) => {
@@ -49,18 +53,25 @@ task("watch", "Start the file watcher").setAction(
       .on("change", async () => {
         for (let i = 0; i < watcher.tasks.length; i++) {
           const task = watcher.tasks[i];
-          console.log(
+          logVerbose(
             `Running task "${task.command}" with params ${JSON.stringify(
               task.params
             )}`
           );
-          await run(task.command, task.params);
+          try {
+            await run(task.command, task.params);
+          } catch (err) {
+            logVerbose(`Task "${task.command}" failed.`);
+            logVerbose(err);
+          }
         }
       })
       .on("error", (error: Error) => {
         console.log(`Watcher error: ${error}`);
         process.exit(1);
       });
+
+    console.log("File watcher started.");
 
     await new Promise((resolve) => setTimeout(resolve, 2000000000));
   }
