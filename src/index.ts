@@ -23,7 +23,7 @@ extendConfig(
           };
         }
       }),
-      directories: w.directories ?? [config.paths.sources],
+      files: w.files ?? [config.paths.sources],
       verbose: w.verbose ?? false,
     };
   }
@@ -31,7 +31,7 @@ extendConfig(
 
 task("watch", "Start the file watcher").setAction(
   async ({}, { run, tasks, config: { watcher } }) => {
-    console.log("Starting file watcher", watcher.directories);
+    console.log("Starting file watcher", watcher.files);
 
     // Validate tasks
     watcher.tasks.forEach((task) => {
@@ -45,7 +45,7 @@ task("watch", "Start the file watcher").setAction(
     });
 
     chokidar
-      .watch(watcher.directories)
+      .watch(watcher.files)
       .on("change", async () => {
         for (let i = 0; i < watcher.tasks.length; i++) {
           const task = watcher.tasks[i];

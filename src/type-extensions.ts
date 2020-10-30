@@ -15,7 +15,7 @@ declare module "hardhat/types/config" {
   export interface HardhatUserConfig {
     watcher?: {
       tasks?: WatcherTask[];
-      directories?: string[];
+      files?: string[];
       verbose?: boolean;
     };
   }
@@ -24,7 +24,7 @@ declare module "hardhat/types/config" {
   export interface HardhatConfig {
     watcher: {
       tasks: Required<ExpandedWatcherTask>[];
-      directories: string[];
+      files: string[];
       verbose: boolean;
     };
   }
