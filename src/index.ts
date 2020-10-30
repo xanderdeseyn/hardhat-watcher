@@ -7,9 +7,22 @@ import "./type-extensions";
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
     let w = userConfig.watcher ?? {};
+    const tasks = w.tasks ?? [];
 
     config.watcher = {
-      tasks: w.tasks ?? [],
+      tasks: tasks.map((t) => {
+        if (typeof t === "string") {
+          return {
+            command: t,
+            params: {},
+          };
+        } else {
+          return {
+            command: t.command,
+            params: t.params ?? {},
+          };
+        }
+      }),
       directories: w.directories ?? [config.paths.sources],
       verbose: w.verbose ?? false,
     };
@@ -22,10 +35,11 @@ task("watch", "Start the file watcher").setAction(
 
     // Validate tasks
     watcher.tasks.forEach((task) => {
-      if (!(task in tasks)) {
+      if (!(task.command in tasks)) {
         console.log(
-          `Watcher error: task "${task}" is not supported by hardhat runtime.`
+          `Watcher error: task "${task.command}" is not supported by hardhat runtime.`
         );
+        console.log(`Found tasks: ${JSON.stringify(Object.keys(tasks))}`);
         process.exit(1);
       }
     });
@@ -35,15 +49,17 @@ task("watch", "Start the file watcher").setAction(
       .on("change", async () => {
         for (let i = 0; i < watcher.tasks.length; i++) {
           const task = watcher.tasks[i];
-          console.log(`Running task "${task}"`);
-          await run(task);
+          console.log(
+            `Running task "${task.command}" with params ${JSON.stringify(
+              task.params
+            )}`
+          );
+          await run(task.command, task.params);
         }
       })
       .on("error", (error: Error) => {
         console.log(`Watcher error: ${error}`);
         process.exit(1);
       });
-
-    setInterval(() => {}, 1 << 30);
   }
 );
