@@ -7,7 +7,7 @@ declare module "hardhat/types/config" {
   export type ExpandedWatcherTask = {
     command: string;
     params?: {
-      [key: string]: string;
+      [key: string]: any;
     };
   };
 

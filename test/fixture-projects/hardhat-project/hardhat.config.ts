@@ -6,7 +6,7 @@ const config: HardhatUserConfig = {
   solidity: "0.7.3",
   defaultNetwork: "hardhat",
   watcher: {
-    tasks: ["clean", "compile"],
+    tasks: ["clean", { command: "compile", params: { quiet: true } }],
     verbose: true,
   },
 };
