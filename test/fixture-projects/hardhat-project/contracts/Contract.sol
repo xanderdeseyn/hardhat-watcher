@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.7.3;
 
-contract TestContract {
+contract TestContract3 {
     uint256 amount;
 
     string message = "placeholder";

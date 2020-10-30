@@ -61,5 +61,7 @@ task("watch", "Start the file watcher").setAction(
         console.log(`Watcher error: ${error}`);
         process.exit(1);
       });
+
+    await new Promise((resolve) => setTimeout(resolve, 2000000000));
   }
 );

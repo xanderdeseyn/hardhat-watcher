@@ -19,7 +19,7 @@ describe("Watcher tests", function () {
   it("Watch contracts and clean + compile on change", async function () {
     try {
       simulateFileChange("Contract.sol");
-      await this.hre.run("watch");
+      this.hre.run("watch");
       await sleep(1000);
 
       console.log("=========== Simulating file change =============");
