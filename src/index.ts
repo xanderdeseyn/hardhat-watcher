@@ -60,6 +60,10 @@ task("watch", "Start the file watcher").setAction(
           );
           try {
             await run(task.command, task.params);
+            // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
+            Object.keys(require.cache).forEach(function (key) {
+              delete require.cache[key];
+            });
           } catch (err) {
             console.log(`Task "${task.command}" failed.`);
             console.log(err);
