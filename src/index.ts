@@ -30,7 +30,7 @@ extendConfig(
 );
 
 task("watch", "Start the file watcher").setAction(
-  async ({}, { run, tasks, config: { watcher } }) => {
+  async ({}, { run, tasks, config: { watcher, paths } }) => {
     const logVerbose = (...messages: any) => {
       if (watcher.verbose) console.log(...messages);
     };
@@ -62,7 +62,9 @@ task("watch", "Start the file watcher").setAction(
             await run(task.command, task.params);
             // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
             Object.keys(require.cache).forEach(function (key) {
-              delete require.cache[key];
+              if (key.startsWith(paths.tests)) {
+                delete require.cache[key];
+              }
             });
           } catch (err) {
             console.log(`Task "${task.command}" failed.`);
