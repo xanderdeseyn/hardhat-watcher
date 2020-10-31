@@ -49,7 +49,11 @@ task("watch", "Start the file watcher").setAction(
     });
 
     chokidar
-      .watch(watcher.files)
+      .watch(watcher.files, {
+        ignoreInitial: true,
+        usePolling: true,
+        interval: 250,
+      })
       .on("change", async () => {
         for (let i = 0; i < watcher.tasks.length; i++) {
           const task = watcher.tasks[i];
