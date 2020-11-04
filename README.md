@@ -69,7 +69,32 @@ A bit more involved and showcasing the use of parameters for tasks:
 ```js
 module.exports = {
   watcher: {
-    tasks: ["clean", { command: "compile", params: { quiet: true } }],
+    tasks: ["clean", { command: "compile", params: { quiet: true } }, { command: "test", params: { noCompile: true, testFiles: ["testfile.ts"] } } ],
   },
 }
 ```
+
+### Positional arguments
+
+Positional arguments are provided in the same way as "normal" arguments (check out the `testFiles` argument in the example above, it's a positional argument).
+In order to find the name of a positional argument, simply run `yarn hardhat <YOUR_COMMAND> --help`.
+This is an example output for the `test` command:
+
+````
+Hardhat version 2.0.2
+
+Usage: hardhat [GLOBAL OPTIONS] test [--no-compile] [...testFiles]
+
+OPTIONS:
+
+  --no-compile  Don't compile before running this task 
+
+POSITIONAL ARGUMENTS:
+
+  testFiles     An optional list of files to test (default: [])
+
+test: Runs mocha tests
+
+For global options help run: hardhat help
+```
+
