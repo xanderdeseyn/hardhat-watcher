@@ -1,5 +1,5 @@
 import { extendConfig, task } from "hardhat/config";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
+import { HardhatConfig, HardhatUserConfig, WatcherConfig } from "hardhat/types";
 import chokidar from "chokidar";
 
 import "./type-extensions";
@@ -7,82 +7,101 @@ import "./type-extensions";
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
     let w = userConfig.watcher ?? {};
-    const tasks = w.tasks ?? [];
 
-    config.watcher = {
-      tasks: tasks.map((t) => {
-        if (typeof t === "string") {
-          return {
-            command: t,
-            params: {},
-          };
-        } else {
-          return {
-            command: t.command,
-            params: t.params ?? {},
-          };
-        }
-      }),
-      files: w.files ?? [config.paths.sources],
-      verbose: w.verbose ?? false,
-    };
-  }
-);
+    const normalizedWatcher: WatcherConfig = {};
 
-task("watch", "Start the file watcher").setAction(
-  async ({}, { run, tasks, config: { watcher, paths } }) => {
-    const logVerbose = (...messages: any) => {
-      if (watcher.verbose) console.log(...messages);
-    };
-
-    logVerbose("Starting file watcher", watcher.files);
-
-    // Validate tasks
-    watcher.tasks.forEach((task) => {
-      if (!(task.command in tasks)) {
-        console.log(
-          `Watcher error: task "${task.command}" is not supported by hardhat runtime.`
-        );
-        console.log(`Found tasks: ${JSON.stringify(Object.keys(tasks))}`);
-        process.exit(1);
-      }
+    Object.entries(w).forEach(([name, task]) => {
+      normalizedWatcher[name] = {
+        tasks: (task?.tasks ?? []).map((t) => {
+          if (typeof t === "string") {
+            return {
+              command: t,
+              params: {},
+            };
+          } else {
+            return {
+              command: t.command,
+              params: t.params ?? {},
+            };
+          }
+        }),
+        files: task.files ?? [config.paths.sources],
+        verbose: task.verbose ?? false,
+      };
     });
 
-    chokidar
-      .watch(watcher.files, {
-        ignoreInitial: true,
-        usePolling: true,
-        interval: 250,
-      })
-      .on("change", async () => {
-        for (let i = 0; i < watcher.tasks.length; i++) {
-          const task = watcher.tasks[i];
-          logVerbose(
-            `Running task "${task.command}" with params ${JSON.stringify(
-              task.params
-            )}`
-          );
-          try {
-            await run(task.command, task.params);
-            // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
-            Object.keys(require.cache).forEach(function (key) {
-              if (key.startsWith(paths.tests)) {
-                delete require.cache[key];
-              }
-            });
-          } catch (err) {
-            console.log(`Task "${task.command}" failed.`);
-            console.log(err);
-          }
-        }
-      })
-      .on("error", (error: Error) => {
-        console.log(`Watcher error: ${error}`);
-        process.exit(1);
-      });
-
-    console.log("File watcher started.");
-
-    await new Promise((resolve) => setTimeout(resolve, 2000000000));
+    config.watcher = normalizedWatcher;
   }
 );
+
+task("watch", "Start the file watcher")
+  .addPositionalParam(
+    "watcherTask",
+    "watcher task to run (as defined in hardhat config)"
+  )
+  .setAction(
+    async ({ watcherTask }, { run, tasks, config: { watcher, paths } }) => {
+      if (!(watcherTask in watcher)) {
+        console.log(
+          `Watcher task "${watcherTask}" was not found in hardhat config.`
+        );
+        process.exit(1);
+      }
+
+      const taskConfig = watcher[watcherTask];
+
+      const logVerbose = (...messages: any) => {
+        if (taskConfig.verbose) console.log(...messages);
+      };
+
+      logVerbose("Starting file watcher", taskConfig.files);
+
+      // Validate tasks
+      taskConfig.tasks.forEach((task) => {
+        if (!(task.command in tasks)) {
+          console.log(
+            `Watcher error: task "${task.command}" is not supported by hardhat runtime.`
+          );
+          console.log(`Found tasks: ${JSON.stringify(Object.keys(tasks))}`);
+          process.exit(1);
+        }
+      });
+
+      chokidar
+        .watch(taskConfig.files, {
+          ignoreInitial: true,
+          usePolling: true,
+          interval: 250,
+        })
+        .on("change", async () => {
+          for (let i = 0; i < taskConfig.tasks.length; i++) {
+            const task = taskConfig.tasks[i];
+            logVerbose(
+              `Running task "${task.command}" with params ${JSON.stringify(
+                task.params
+              )}`
+            );
+            try {
+              await run(task.command, task.params);
+              // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
+              Object.keys(require.cache).forEach(function (key) {
+                if (key.startsWith(paths.tests)) {
+                  delete require.cache[key];
+                }
+              });
+            } catch (err) {
+              console.log(`Task "${task.command}" failed.`);
+              console.log(err);
+            }
+          }
+        })
+        .on("error", (error: Error) => {
+          console.log(`Watcher error: ${error}`);
+          process.exit(1);
+        });
+
+      console.log("File watcher started.");
+
+      await new Promise((resolve) => setTimeout(resolve, 2000000000));
+    }
+  );

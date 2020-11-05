@@ -43,9 +43,11 @@ This is the complete type:
 ```js
 module.exports = {
   watcher: {
-    tasks?: (string | { command: string, params?: { [key: string] => any } })[]; // Every task of the hardhat runtime is supported (including other plugins!)
-    files?: string[]; // Files, directories or glob patterns to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to the `contracts` dir)
-    verbose?: boolean; // Turn on for extra logging
+    [key: string]: { // key is the name for the watcherTask
+      tasks?: (string | { command: string, params?: { [key: string] => any } })[]; // Every task of the hardhat runtime is supported (including other plugins!)
+      files?: string[]; // Files, directories or glob patterns to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to the `contracts` dir)
+      verbose?: boolean; // Turn on for extra logging
+    }
   }
 };
 ```
@@ -57,22 +59,28 @@ The most basic use case, which is simply compiling your files on change, is acco
 ```js
 module.exports = {
   watcher: {
-    tasks: ["compile"],
+    compilation: {
+      tasks: ["compile"],
+    }
   },
 }
 ```
 
-and subsequently running `npx hardhat watch`
+and subsequently running `npx hardhat watch compilation`
 
 A bit more involved and showcasing the use of parameters for tasks:
 
 ```js
 module.exports = {
   watcher: {
-    tasks: ["clean", { command: "compile", params: { quiet: true } }, { command: "test", params: { noCompile: true, testFiles: ["testfile.ts"] } } ],
+    ci: {
+      tasks: ["clean", { command: "compile", params: { quiet: true } }, { command: "test", params: { noCompile: true, testFiles: ["testfile.ts"] } } ],
+    }
   },
 }
 ```
+
+Run with `npx hardhat watch ci` to clean, compile and test on every file change.
 
 ### Positional arguments
 

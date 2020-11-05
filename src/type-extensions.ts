@@ -2,30 +2,36 @@ import "hardhat/types/config";
 import "hardhat/types/runtime";
 
 declare module "hardhat/types/config" {
-  export type WatcherTask = string | ExpandedWatcherTask;
+  export type HardhatTask = string | ExpandedHardhatTask;
 
-  export type ExpandedWatcherTask = {
+  export type ExpandedHardhatTask = {
     command: string;
     params?: {
       [key: string]: any;
     };
   };
 
+  export type WatcherTask = {
+    tasks?: HardhatTask[];
+    files?: string[];
+    verbose?: boolean;
+  };
+
   // User facing config
   export interface HardhatUserConfig {
-    watcher?: {
-      tasks?: WatcherTask[];
-      files?: string[];
-      verbose?: boolean;
-    };
+    watcher?: { [key: string]: WatcherTask };
   }
 
-  // Fully resolved config
-  export interface HardhatConfig {
-    watcher: {
-      tasks: Required<ExpandedWatcherTask>[];
+  export type WatcherConfig = {
+    [key: string]: {
+      tasks: Required<ExpandedHardhatTask>[];
       files: string[];
       verbose: boolean;
     };
+  };
+
+  // Fully resolved config
+  export interface HardhatConfig {
+    watcher: WatcherConfig;
   }
 }
