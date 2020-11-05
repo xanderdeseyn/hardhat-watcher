@@ -68,11 +68,16 @@ module.exports = {
 
 and subsequently running `npx hardhat watch compilation`
 
-A bit more involved and showcasing the use of parameters for tasks:
+A bit more involved and showcasing the use of parameters for tasks and defining multiple watcher tasks:
 
 ```js
 module.exports = {
   watcher: {
+    compilation: {
+      tasks: ["compile"],
+      files: ["./contracts"],
+      verbose: true,
+    },
     ci: {
       tasks: ["clean", { command: "compile", params: { quiet: true } }, { command: "test", params: { noCompile: true, testFiles: ["testfile.ts"] } } ],
     }
@@ -80,7 +85,7 @@ module.exports = {
 }
 ```
 
-Run with `npx hardhat watch ci` to clean, compile and test on every file change.
+Run `npx hardhat watch ci` to clean, compile and test on every file change, or run `npx hardhat watch compilation` to compile.
 
 ### Positional arguments
 
