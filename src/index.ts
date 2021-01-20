@@ -56,6 +56,24 @@ task("watch", "Start the file watcher")
 
       logVerbose("Starting file watcher", taskConfig.files);
 
+      const templateReplace = (value: any, pattern: string, replace: string) => {
+        if (Array.isArray(value)) {
+          return value.map(v => v.replace(pattern, replace));
+        } else if (typeof(value) == 'string') {
+          return value.replace(pattern, replace);
+        } else {
+          return value
+        }
+      }
+
+      const paramsTemplateReplace = (params: any, pattern: string, replace: string) => {
+        const newParams: any = {}
+        Object.keys(params).forEach(k => {
+          newParams[k] = templateReplace(params[k], pattern, replace)
+        });
+        return newParams;
+      }
+
       // Validate tasks
       taskConfig.tasks.forEach((task) => {
         if (!(task.command in tasks)) {
@@ -73,16 +91,20 @@ task("watch", "Start the file watcher")
           usePolling: true,
           interval: 250,
         })
-        .on("change", async () => {
+        .on("change", async path => {
           for (let i = 0; i < taskConfig.tasks.length; i++) {
             const task = taskConfig.tasks[i];
+
+            // Replace template pattern with the changed file
+            const newParams = paramsTemplateReplace(task.params, '{path}', path)
+
             logVerbose(
               `Running task "${task.command}" with params ${JSON.stringify(
-                task.params
+                newParams
               )}`
             );
             try {
-              await run(task.command, task.params);
+              await run(task.command, newParams);
               // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
               Object.keys(require.cache).forEach(function (key) {
                 if (key.startsWith(paths.tests)) {

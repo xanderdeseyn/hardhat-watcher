@@ -111,3 +111,21 @@ test: Runs mocha tests
 For global options help run: hardhat help
 ```
 
+### Changed file as argument
+
+The path of the changed file can be inserted into positional arguments using the template parameter `{path}`. This speeds up iteration in testing, especially if using single test isolation (for example, by using `it.only("test")` in mocha.)
+
+Example:
+```
+
+module.exports = {
+  watcher: {
+    test: {
+      tasks: [{ command:'test', params: {testFiles: ['{path}']} }],
+      files: ['./test/**/*'],
+      verbose: true
+    }
+  }
+}
+```
+
