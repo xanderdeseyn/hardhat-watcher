@@ -1,8 +1,8 @@
 {
-  "name": "hardhat-watcher",
+  "name": "hardhat-watcher-2",
   "version": "2.0.0",
   "description": "Hardhat file watcher plugin",
-  "repository": "https://github.com/N1ghtly/hardhat-watcher",
+  "repository": "https://github.com/NotRealAI/hardhat-watcher",
   "author": "Xander Deseyn",
   "license": "MIT",
   "main": "dist/src/index.js",
