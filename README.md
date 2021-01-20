@@ -119,7 +119,7 @@ Example:
 module.exports = {
   watcher: {
     test: {
-      tasks: [{ command:'test', params: {testFiles: ['{path}']} }],
+      tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
       files: ['./test/**/*'],
       verbose: true
     }
