@@ -20,7 +20,7 @@
     "test": "mocha --exit --recursive -r ts-node/register 'test/**/*.test.ts'",
     "build": "tsc",
     "watch": "tsc -w",
-    "release": "yarn build && yarn np --no-tests --no-2fa"
+    "release": "npm run build && npx np --no-tests --no-2fa"
   },
   "files": [
     "dist/src/",
@@ -36,7 +36,7 @@
     "chai": "^4.3.6",
     "hardhat": "^2.9.3",
     "mocha": "^10.0.0",
-    "np": "^7.0.0",
+    "np": "^7.6.1",
     "prettier": "^2.6.2",
     "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
