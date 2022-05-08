@@ -9,6 +9,7 @@ const config: HardhatUserConfig = {
     compilation: {
       tasks: ['clean', { command: 'compile', params: { quiet: true } }],
       files: ['./contracts'],
+      ignoredFiles: ['**/.editortest'],
       verbose: true,
     },
   },

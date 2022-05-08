@@ -8,7 +8,7 @@ _Automatically run Hardhat actions when files change_
 npm install hardhat-watcher
 ```
 
-or 
+or
 
 ```bash
 yarn add hardhat-watcher
@@ -17,18 +17,19 @@ yarn add hardhat-watcher
 Import the plugin in your `hardhat.config.js`:
 
 ```js
-require("hardhat-watcher");
+require('hardhat-watcher')
 ```
 
 Or if you are using TypeScript, in your `hardhat.config.ts`:
 
 ```ts
-import "hardhat-watcher";
+import 'hardhat-watcher'
 ```
 
 ## Tasks
 
 This plugin adds the _watch_ task to Hardhat:
+
 ```bash
 npx hardhat watch
 ```
@@ -46,6 +47,7 @@ module.exports = {
     [key: string]: { // key is the name for the watcherTask
       tasks?: (string | { command: string, params?: { [key: string] => any } })[]; // Every task of the hardhat runtime is supported (including other plugins!)
       files?: string[]; // Files, directories or glob patterns to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to the `contracts` dir)
+      ignoredFiles?: string[]; // Files, directories or glob patterns that should *not* be watched.
       verbose?: boolean; // Turn on for extra logging
     }
   }
@@ -60,8 +62,8 @@ The most basic use case, which is simply compiling your files on change, is acco
 module.exports = {
   watcher: {
     compilation: {
-      tasks: ["compile"],
-    }
+      tasks: ['compile'],
+    },
   },
 }
 ```
@@ -74,13 +76,18 @@ A bit more involved and showcasing the use of parameters for tasks and defining 
 module.exports = {
   watcher: {
     compilation: {
-      tasks: ["compile"],
-      files: ["./contracts"],
+      tasks: ['compile'],
+      files: ['./contracts'],
+      ignoredFiles: ['**/.vscode'],
       verbose: true,
     },
     ci: {
-      tasks: ["clean", { command: "compile", params: { quiet: true } }, { command: "test", params: { noCompile: true, testFiles: ["testfile.ts"] } } ],
-    }
+      tasks: [
+        'clean',
+        { command: 'compile', params: { quiet: true } },
+        { command: 'test', params: { noCompile: true, testFiles: ['testfile.ts'] } },
+      ],
+    },
   },
 }
 ```
@@ -93,14 +100,14 @@ Positional arguments are provided in the same way as "normal" arguments (check o
 In order to find the name of a positional argument, simply run `yarn hardhat <YOUR_COMMAND> --help`.
 This is an example output for the `test` command:
 
-````
+```
 Hardhat version 2.0.2
 
 Usage: hardhat [GLOBAL OPTIONS] test [--no-compile] [...testFiles]
 
 OPTIONS:
 
-  --no-compile  Don't compile before running this task 
+  --no-compile  Don't compile before running this task
 
 POSITIONAL ARGUMENTS:
 
@@ -109,13 +116,15 @@ POSITIONAL ARGUMENTS:
 test: Runs mocha tests
 
 For global options help run: hardhat help
-````
+```
+
 ### Changed file as argument
 
 The path of the changed file can be inserted into positional arguments using the template parameter `{path}`. This speeds up iteration in testing, especially if using single test isolation (for example, by using `it.only("test")` in mocha.)
 
 Example:
-````
+
+```
 module.exports = {
   watcher: {
     test: {
@@ -125,5 +134,4 @@ module.exports = {
     }
   }
 }
-````
-
+```

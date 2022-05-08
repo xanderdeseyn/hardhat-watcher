@@ -25,6 +25,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
         }
       }),
       files: task.files ?? [config.paths.sources],
+      ignoredFiles: task.ignoredFiles ?? [],
       verbose: task.verbose ?? false,
     }
   })
@@ -77,6 +78,7 @@ task('watch', 'Start the file watcher')
 
     chokidar
       .watch(taskConfig.files, {
+        ignored: taskConfig.ignoredFiles,
         ignoreInitial: true,
         usePolling: true,
         interval: 250,
