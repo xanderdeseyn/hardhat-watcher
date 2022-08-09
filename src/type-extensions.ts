@@ -16,6 +16,8 @@ declare module 'hardhat/types/config' {
     files?: string[]
     ignoredFiles?: string[]
     verbose?: boolean
+    start?: string
+    clearOnStart?: boolean
   }
 
   // User facing config
@@ -29,6 +31,8 @@ declare module 'hardhat/types/config' {
       files: string[]
       ignoredFiles: string[]
       verbose: boolean
+      start?: string
+      clearOnStart?: boolean
     }
   }
 

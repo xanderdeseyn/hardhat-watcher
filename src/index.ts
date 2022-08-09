@@ -1,6 +1,7 @@
 import { extendConfig, task } from 'hardhat/config'
 import { HardhatConfig, HardhatUserConfig, WatcherConfig } from 'hardhat/types'
 import chokidar from 'chokidar'
+const { execSync } = require('child_process')
 
 import './type-extensions'
 
@@ -27,6 +28,8 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
       files: task.files ?? [config.paths.sources],
       ignoredFiles: task.ignoredFiles ?? [],
       verbose: task.verbose ?? false,
+      start: task.start ?? '',
+      clearOnStart: task.clearOnStart ?? false,
     }
   })
 
@@ -84,6 +87,19 @@ task('watch', 'Start the file watcher')
         interval: 250,
       })
       .on('change', async path => {
+        // Clear on on changed files received
+        if (taskConfig.clearOnStart) {
+          console.clear()
+        }
+        if (taskConfig.start) {
+          try {
+            execSync(taskConfig.start, { stdio: 'pipe' })
+          } catch (error) {
+            console.log("Faile to execute 'start' script:", taskConfig.start)
+            console.error(error)
+          }
+        }
+
         for (let i = 0; i < taskConfig.tasks.length; i++) {
           const task = taskConfig.tasks[i]
 
