@@ -49,6 +49,8 @@ module.exports = {
       files?: string[]; // Files, directories or glob patterns to watch for changes. (defaults to `[config.paths.sources]`, which itself defaults to the `contracts` dir)
       ignoredFiles?: string[]; // Files, directories or glob patterns that should *not* be watched.
       verbose?: boolean; // Turn on for extra logging
+      clearOnStart?: boolean; // Turn on to clear the logs (of older task runs) each time before running the task
+      start?: string; // Run any desirable command each time before the task runs
     }
   }
 };
@@ -80,6 +82,8 @@ module.exports = {
       files: ['./contracts'],
       ignoredFiles: ['**/.vscode'],
       verbose: true,
+      clearOnStart: true,
+      start: 'echo Running my compilation task now..'
     },
     ci: {
       tasks: [
@@ -130,7 +134,9 @@ module.exports = {
     test: {
       tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
       files: ['./test/**/*'],
-      verbose: true
+      verbose: true,
+      clearOnStart: true,
+      start: 'echo Running my test task now..',
     }
   }
 }
