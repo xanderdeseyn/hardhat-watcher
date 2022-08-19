@@ -93,7 +93,7 @@ task('watch', 'Start the file watcher')
         }
         if (taskConfig.start) {
           try {
-            execSync(taskConfig.start, { stdio: 'pipe' })
+            execSync(taskConfig.start, { stdio: 'inherit' })
           } catch (error) {
             console.log("Faile to execute 'start' script:", taskConfig.start)
             console.error(error)
