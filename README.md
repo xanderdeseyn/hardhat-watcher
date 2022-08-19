@@ -51,6 +51,7 @@ module.exports = {
       verbose?: boolean; // Turn on for extra logging
       clearOnStart?: boolean; // Turn on to clear the logs (of older task runs) each time before running the task
       start?: string; // Run any desirable command each time before the task runs
+      runOnLaunch?: boolean; // Turn on to run tasks immediately on launch. Be aware, tasks will be run with path parameter "none".
     }
   }
 };
@@ -83,7 +84,7 @@ module.exports = {
       ignoredFiles: ['**/.vscode'],
       verbose: true,
       clearOnStart: true,
-      start: 'echo Running my compilation task now..'
+      start: 'echo Running my compilation task now..',
     },
     ci: {
       tasks: [

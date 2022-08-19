@@ -18,6 +18,7 @@ declare module 'hardhat/types/config' {
     verbose?: boolean
     start?: string
     clearOnStart?: boolean
+    runOnLaunch?: boolean
   }
 
   // User facing config
@@ -33,6 +34,7 @@ declare module 'hardhat/types/config' {
       verbose: boolean
       start?: string
       clearOnStart?: boolean
+      runOnLaunch?: boolean
     }
   }
 

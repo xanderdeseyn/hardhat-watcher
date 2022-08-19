@@ -17,7 +17,7 @@ describe('Watcher tests', function () {
       simulateFileChange('Contract.sol')
       simulateFileChange('.editortest', 'contracts/.editortest')
       this.hre.run('watch', { watcherTask: 'compilation' })
-      await sleep(1000)
+      await sleep(5000)
 
       console.log('=========== Simulating Contract.sol change =============')
       simulateFileChange('Contract2.sol')

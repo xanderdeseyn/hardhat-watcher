@@ -11,6 +11,7 @@ const config: HardhatUserConfig = {
       files: ['./contracts'],
       ignoredFiles: ['**/.editortest'],
       verbose: true,
+      runOnLaunch: true,
     },
   },
 }

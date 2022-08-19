@@ -30,6 +30,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
       verbose: task.verbose ?? false,
       start: task.start ?? '',
       clearOnStart: task.clearOnStart ?? false,
+      runOnLaunch: task.runOnLaunch ?? false,
     }
   })
 
@@ -79,6 +80,42 @@ task('watch', 'Start the file watcher')
       }
     })
 
+    const runTasks = async (path: string) => {
+      // Clear on on changed files received
+      if (taskConfig.clearOnStart) {
+        console.clear()
+      }
+      if (taskConfig.start) {
+        try {
+          execSync(taskConfig.start, { stdio: 'inherit' })
+        } catch (error) {
+          console.log("Failed to execute 'start' script:", taskConfig.start)
+          console.error(error)
+        }
+      }
+
+      for (let i = 0; i < taskConfig.tasks.length; i++) {
+        const task = taskConfig.tasks[i]
+
+        // Replace template pattern with the changed file
+        const newParams = paramsTemplateReplace(task.params, '{path}', path)
+
+        logVerbose(`Running task "${task.command}" with params ${JSON.stringify(newParams)}`)
+        try {
+          await run(task.command, newParams)
+          // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
+          Object.keys(require.cache).forEach(function (key) {
+            if (key.startsWith(paths.tests)) {
+              delete require.cache[key]
+            }
+          })
+        } catch (err) {
+          console.log(`Task "${task.command}" failed.`)
+          console.log(err)
+        }
+      }
+    }
+
     chokidar
       .watch(taskConfig.files, {
         ignored: taskConfig.ignoredFiles,
@@ -86,41 +123,13 @@ task('watch', 'Start the file watcher')
         usePolling: true,
         interval: 250,
       })
-      .on('change', async path => {
-        // Clear on on changed files received
-        if (taskConfig.clearOnStart) {
-          console.clear()
-        }
-        if (taskConfig.start) {
-          try {
-            execSync(taskConfig.start, { stdio: 'inherit' })
-          } catch (error) {
-            console.log("Failed to execute 'start' script:", taskConfig.start)
-            console.error(error)
-          }
-        }
-
-        for (let i = 0; i < taskConfig.tasks.length; i++) {
-          const task = taskConfig.tasks[i]
-
-          // Replace template pattern with the changed file
-          const newParams = paramsTemplateReplace(task.params, '{path}', path)
-
-          logVerbose(`Running task "${task.command}" with params ${JSON.stringify(newParams)}`)
-          try {
-            await run(task.command, newParams)
-            // This hack is required to allow running Mocha commands. Check out https://github.com/mochajs/mocha/issues/1938 for more details.
-            Object.keys(require.cache).forEach(function (key) {
-              if (key.startsWith(paths.tests)) {
-                delete require.cache[key]
-              }
-            })
-          } catch (err) {
-            console.log(`Task "${task.command}" failed.`)
-            console.log(err)
-          }
+      .on('ready', () => {
+        if (taskConfig.runOnLaunch) {
+          console.log('Run on launch is enabled, immediately running tasks.')
+          runTasks('none')
         }
       })
+      .on('change', runTasks)
       .on('error', (error: Error) => {
         console.log(`Watcher error: ${error}`)
         process.exit(1)
