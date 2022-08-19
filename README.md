@@ -135,7 +135,7 @@ module.exports = {
       tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
       files: ['./test/**/*'],
       verbose: true,
-			clearOnStart: true,
+      clearOnStart: true,
       start: 'echo Running my test task now..',
     }
   }
